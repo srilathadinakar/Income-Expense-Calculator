@@ -1,4 +1,4 @@
-<h1>Income Expense Calculator</h1>
+<h2>Income Expense Calculator</h2>
 
 This project is designed to manage income expense details..
 
