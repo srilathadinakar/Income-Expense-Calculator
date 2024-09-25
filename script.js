@@ -11,6 +11,7 @@ const updBalance = document.getElementById("net-balance");
 
 const data = JSON.parse(localStorage.getItem("data")) || [];
 
+
 form.addEventListener("submit",(e)=>{
     e.preventDefault();
 
@@ -28,7 +29,7 @@ form.addEventListener("submit",(e)=>{
     updateSummary();
 })
 
-// getting data from getdata and create div in frontend
+// getting data and Create table elements
  const createTable = (data) =>{    
     entries.innerHTML = "";   
     data.map((ele,y)=>{             
@@ -38,15 +39,15 @@ form.addEventListener("submit",(e)=>{
                     <td class="p-3 w-1/6 text-lg pl-5">${ele.description}</td>
                     <td class="p-3 w-1/6 text-lg pl-5">${ele.amount}</td>   
                     <td class="p-3 w-1/6 text-lg pl-5">${ele.type}</td>                  
-                    <td><button class="edit pl-10" onclick="editTask(this)"><i class="material-symbols-rounded" style="color:green">Edit</i></button></td>
-                    <td><button class="delete pl-10" onclick="deleteTask(this); createTable(data);"><i class="material-symbols-rounded" style="color:red">Delete</i></button></td>          
+                    <td><button class="pl-10" onclick="editTask(${y})"><i class="material-symbols-rounded" style="color:green">Edit</i></button></td>
+                    <td><button class="pl-10" onclick="deleteTask(${y})"><i class="material-symbols-rounded" style="color:red">Delete</i></button></td>          
                 </tr>            
             `
         )       
     })
-    resetForm();
 } 
 
+//Update Income Expense details
  const updateSummary = () => {
     let totalIncome = data
         .filter((e) => e.type === "Income")
@@ -61,6 +62,7 @@ form.addEventListener("submit",(e)=>{
     updBalance.innerText = `₹${totalIncome - totalExpense}`;
 }
 
+//Enable Filter Functions
 document.querySelectorAll('input[name="filter"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
         const filter = e.target.value;      
@@ -82,22 +84,25 @@ const resetForm = () =>{
     amountInput.value = "";
 }
 
-//edit function
-const editTask = (e) =>{
-    let result = e.parentElement.parentElement;
-    descriptionInput.value = result.children[0].innerHTML;
-    amountInput.value = result.children[1].innerHTML;
-    document.querySelector('input[name="type"]').value = result.children[2].innerHTML;    
-    
-    deleteTask(e);   
-} 
-
-const deleteTask = (e) =>{
-    e.parentElement.parentElement.remove();
-    data.splice(e.parentElement.parentElement.id,1);
+//Edit Data
+const editTask = (index) => {
+    const editedData = data[index];
+    descriptionInput.value = editedData.description;
+    amountInput.value = editedData.amount;
+    document.querySelector(`input[value="${editedData.type}"]`).checked = true;
+    data.splice(index, 1);
     localStorage.setItem("data",JSON.stringify(data));
     updateSummary();
-}
+    createTable(data);
+};
+
+// Delete Data
+const deleteTask = (index) => {
+    data.splice(index, 1);
+    localStorage.setItem("data",JSON.stringify(data));
+    updateSummary();
+    createTable(data);
+};
 
 createTable(data);
 updateSummary();
